@@ -6,8 +6,11 @@ class Logbook:
         self.ascents.append(ascent)
 
 class Ascent:
-    def __init__(self, date, name, grade):
+    def __init__(self, climb_name, date, grade, climb_type, style, stars):
+        # Could also be added: crag, partner, notes
+        self.name = climb_name
         self.date = date
-        self.name = name
-        self.grade = grade # This should be an instance of the Grade class
-
+        self.grade = grade
+        self.type = climb_type
+        self.style = style
+        self.stars = stars
