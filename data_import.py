@@ -6,6 +6,7 @@ from logbook import Logbook, Ascent
 class UKCImport:
     main_style_strings = {
         "": Style.MainStyle.NONE,
+        "-": Style.MainStyle.NONE,
         "Lead": Style.MainStyle.LEAD,
         "Solo": Style.MainStyle.SOLO,
         "Sent": Style.MainStyle.BOULDER,
@@ -61,8 +62,6 @@ class UKCImport:
 
         if split_grade_text == []:
             return None, None, None
-        
-        print(split_grade_text)
 
         # First bit will always be the main grade
         if split_grade_text[0] != "":
