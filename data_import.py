@@ -12,9 +12,9 @@ class LogbookImport:
         
 
 def main():
-    file_path = "data"
+    file_relative_location = "data"
     file_name = "Carl_Logbook.xlsx"
-    full_path = os.path.join(file_path, file_name)
+    full_path = os.path.join(file_relative_location, file_name)
 
 if __name__ == "__main__":
     main()
