@@ -1,19 +1,25 @@
+from calendar import leapdays
+from enum import Enum
+
 class AllGrades:
+    # TODO read this all from a config file, much neater
+    # Also have a long and heated discussion about what is equivalent between disciplines! Absolutely no effort made to equalise it so far.
+
     winter_grades = {
-        "I": 0,
-        "I/II": 0.5,
-        "II": 1,
-        "II/III": 1.5,
-        "III": 2,
-        "IV": 3,
-        "V": 4,
-        "VI": 5,
-        "VII": 6,
-        "VIII": 7,
-        "IX": 8,
-        "X": 9,
-        "XI": 10,
-        "XII": 11
+        "I": 1,
+        "I/II": 2,
+        "II": 3,
+        "II/III": 4,
+        "III": 5,
+        "IV": 6,
+        "V": 7,
+        "VI": 8,
+        "VII": 9,
+        "VIII": 10,
+        "IX": 11,
+        "X": 12,
+        "XI": 13,
+        "XII": 14
     }
 
     trad_grades = {
@@ -99,7 +105,46 @@ class AllGrades:
         "f8B+": 19,
         "f8C":  20,
         "f8C+": 21,
-        "f9A":  22,
+        "f9A":  22
+    }
+
+    sport_grades = {
+        "1":    1,
+        "2a":   2,
+        "2b":   2,
+        "2c":   2,
+        "3a":   3,
+        "3b":   3,
+        "3c":   3.5,
+        "4a":   4,
+        "4b":   4,
+        "4c":   4.5,
+        "5a":   5,
+        "5b":   5.5, # It's all a bit messed up here, can fix later
+        "5c":   6,
+        "6a":   7,
+        "6a+":  7.5,
+        "6b":   8,
+        "6b+":  8.5,
+        "6c":   9,
+        "6c+":  9.5,
+        "7a":   10,
+        "7a+":  11,
+        "7b":   12,
+        "7b+":  13,
+        "7c":   14,
+        "7c+":  15,
+        "8a":   16,
+        "8a+":  17,
+        "8b":   18,
+        "8b+":  19,
+        "8c":   20,
+        "8c+":  21,
+        "9a":   22, # Top end is a bit skewed against bouldering, but not really an issue for how this gets used!!
+        "9a+":  23,
+        "9b":   24,
+        "9b+":  25,
+        "9c":   26
     }
 
 class Grade:
@@ -107,4 +152,54 @@ class Grade:
     def __init__(self, text_grade):
         self.numerical_grade, self.climb_type = self.interpret_grade(text_grade)
     def interpret_grade(text_grade):
-        
+        # Check bouldering grades
+        try:
+            grade = AllGrades.boulder_grades[text_grade]
+        except KeyError:
+            pass
+        else:
+            grade_type = "boulder"
+            return (grade, grade_type)
+        # Check trad grades
+        try:
+            grade = AllGrades.trad_grades[text_grade]
+        except KeyError:
+            pass
+        else:
+            grade_type = "trad"
+            return (grade, grade_type)
+        # Check sport grades
+        try:
+            grade = AllGrades.sport_grades[text_grade]
+        except KeyError:
+            pass
+        else:
+            grade_type = "sport"
+            return (grade, grade_type)
+        # TODO implement other grades (or more likely neaten this up to reduce code replication)
+
+class Style:
+    # E.g. lead/solo/boulder/TR, onsight/flash/RP/dog
+    class MainStyle(Enum):
+        NONE = 0
+        LEAD = 1
+        SECOND = 2
+        SOLO = 3
+        BOULDER = 4
+        TOP_ROPE = 5
+        ALT_LEAD = 6
+        DWS = 7
+    
+    class SubStyle(Enum):
+        NONE = 0
+        ONSIGHT = 1
+        FLASH = 2
+        GROUND_UP = 3
+        REDPOINT = 4
+        REPEAT = 5
+        DOG = 6
+        DNF = 7
+    
+    def __init__(self, main_style, sub_style):
+        self.main_style = main_style
+        self.sub_style = sub_style
