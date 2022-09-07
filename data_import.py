@@ -2,6 +2,7 @@ import os
 from datetime import datetime
 import pandas
 from climb_grading import Grade, Style
+from climb_scoring import FlatScoring
 from logbook import Logbook, Ascent
 
 class UKCImport:
@@ -66,7 +67,8 @@ class UKCImport:
         # First bit will always be the main grade
         if split_grade_text[0] != "":
             try:
-                grade, climb_type = Grade.interpret_grade(split_grade_text[0])
+                grade = Grade(split_grade_text[0])
+                climb_type = grade.climb_type
             except TypeError:
                 grade, climb_type = None, None
         else:
@@ -111,8 +113,23 @@ def main():
 
     log = UKCImport.import_from_xlsx(full_path, "Carl")
 
+    total_score = 0
+    total_non_none_entries = 0
+    total_none_entries = 0
+
     for entry in log.ascents:
-        print(f"{entry.date}: {entry.name} ({entry.type}, {entry.grade}) - {entry.style}")
+        # print(f"{entry.date}: {entry.name} ({entry.grade}) - {entry.style}")
+        try:
+            entry_score = FlatScoring.score_ascent(entry, None)
+        except AttributeError:
+            total_none_entries += 1
+        else:
+            total_non_none_entries += 1
+            total_score += entry_score
+    
+    mean_score = total_score / total_non_none_entries
+    
+    print(f"{total_non_none_entries} climbs: {total_score} points. Mean score {mean_score:.2f}")
 
 
 if __name__ == "__main__":
