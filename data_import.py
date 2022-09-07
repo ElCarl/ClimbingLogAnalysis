@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 import pandas
 from climb_grading import Grade, Style
 from logbook import Logbook, Ascent
@@ -52,10 +53,9 @@ class UKCImport:
 
         style = UKCImport._extract_style(style_text)
 
-        print(date_text)
-        date = 0
+        ascent_date = datetime.strptime(date_text, "%d/%b/%y").date()
 
-        return Ascent(climb_name, date, grade, climb_type, style, stars)
+        return Ascent(climb_name, ascent_date, grade, climb_type, style, stars)
     
     def _extract_grade_and_quality(grade_text):
         split_grade_text = grade_text.split(" ")
@@ -110,6 +110,9 @@ def main():
     full_path = os.path.join(file_relative_location, file_name)
 
     log = UKCImport.import_from_xlsx(full_path, "Carl")
+
+    for entry in log.ascents:
+        print(f"{entry.date}: {entry.name} ({entry.type}, {entry.grade}) - {entry.style}")
 
 
 if __name__ == "__main__":

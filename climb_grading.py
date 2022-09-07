@@ -203,3 +203,6 @@ class Style:
     def __init__(self, main_style, sub_style):
         self.main_style = main_style
         self.sub_style = sub_style
+    
+    def __str__(self):
+        return f"{self.main_style.name.capitalize()} {self.sub_style.name.lower()}"
