@@ -150,8 +150,8 @@ class AllGrades:
 class Grade:
     # Underlying grade will be some easy to use numerical value
     def __init__(self, text_grade):
-        self.numerical_grade, self.climb_type = self.interpret_grade(text_grade)
-    def interpret_grade(text_grade):
+        self.numerical_grade, self.climb_type = Grade._interpret_grade(text_grade)
+    def _interpret_grade(text_grade):
         # Check bouldering grades
         try:
             grade = AllGrades.boulder_grades[text_grade]
@@ -177,6 +177,8 @@ class Grade:
             grade_type = "sport"
             return (grade, grade_type)
         # TODO implement other grades (or more likely neaten this up to reduce code replication)
+    def __str__(self):
+        return f"{self.climb_type}: {self.numerical_grade}"
 
 class Style:
     # E.g. lead/solo/boulder/TR, onsight/flash/RP/dog
@@ -203,3 +205,6 @@ class Style:
     def __init__(self, main_style, sub_style):
         self.main_style = main_style
         self.sub_style = sub_style
+    
+    def __str__(self):
+        return f"{self.main_style.name.capitalize()} {self.sub_style.name.lower()}"
