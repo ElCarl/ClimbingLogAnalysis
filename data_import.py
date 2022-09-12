@@ -3,7 +3,7 @@ from datetime import datetime
 import pandas
 from climb_grading import Grade, Style
 from climb_scoring import FlatScoring
-from logbook import Logbook, Ascent
+import logbook
 
 class UKCImport:
     main_style_strings = {
@@ -34,15 +34,15 @@ class UKCImport:
 
     # Could also have a method to import via web scraping?
     def import_from_xlsx(file_path, climber_name):
-        logbook = Logbook(climber_name)
+        log = logbook.Logbook(climber_name)
         data_frame = pandas.read_excel(file_path)
         data_frame.reset_index()
 
         for _, row in data_frame.iterrows():
             ascent = UKCImport._interpret_logbook_entry(row)
-            logbook.add_ascent(ascent)
+            log.add_ascent(ascent)
         
-        return logbook
+        return log
 
     def _interpret_logbook_entry(row_data):
         climb_name = row_data["Climb name"]
@@ -56,7 +56,7 @@ class UKCImport:
 
         ascent_date = datetime.strptime(date_text, "%d/%b/%y").date()
 
-        return Ascent(climb_name, ascent_date, grade, climb_type, style, stars)
+        return logbook.Ascent(climb_name, ascent_date, grade, climb_type, style, stars)
     
     def _extract_grade_and_quality(grade_text):
         split_grade_text = grade_text.split(" ")
@@ -105,32 +105,3 @@ class UKCImport:
 
         return Style(main_style, sub_style)
 
-
-def main():
-    file_relative_location = "data"
-    file_name = "Carl_Logbook.xlsx"
-    full_path = os.path.join(file_relative_location, file_name)
-
-    log = UKCImport.import_from_xlsx(full_path, "Carl")
-
-    total_score = 0
-    total_non_none_entries = 0
-    total_none_entries = 0
-
-    for entry in log.ascents:
-        # print(f"{entry.date}: {entry.name} ({entry.grade}) - {entry.style}")
-        try:
-            entry_score = FlatScoring.score_ascent(entry, None)
-        except AttributeError:
-            total_none_entries += 1
-        else:
-            total_non_none_entries += 1
-            total_score += entry_score
-    
-    mean_score = total_score / total_non_none_entries
-    
-    print(f"{total_non_none_entries} climbs: {total_score} points. Mean score {mean_score:.2f}")
-
-
-if __name__ == "__main__":
-    main()
